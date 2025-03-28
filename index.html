@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>富士中数学部ジャマイカ！</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="favicon.ico">
+<script>
+    (function(d) {
+      var config = {
+        kitId: 'gyg4pun',
+        scriptTimeout: 3000,
+        async: true
+      },
+      h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+    })(document);
+  </script>
+</head>
+<body>
+
+
+
+<div style="height:40px;"></div>
+
+<div id="canvas">
+
+<div class="materials">
+<div class="dice" id="dice-1">
+    <object class="svg-object" type="image/svg+xml"></object>
+    <p class="number"></p>
+</div>
+<div class="dice" id="dice-2">
+    <object class="svg-object" type="image/svg+xml"></object>
+    <p class="number"></p>
+</div>
+<div class="dice" id="dice-3">
+    <object class="svg-object" type="image/svg+xml"></object>
+    <p class="number"></p>
+</div>
+<div class="dice" id="dice-4">
+    <object class="svg-object" type="image/svg+xml"></object>
+    <p class="number"></p>
+</div>
+<div class="dice" id="dice-5">
+    <object class="svg-object" type="image/svg+xml"></object>
+    <p class="number"></p>
+</div>
+</div>
+
+<div style="height:360px;"></div>
+
+<div class="theme">
+<div class="dice" id="dice-6">
+    <object class="svg-object" type="image/svg+xml"></object>
+    <p class="number"></p>
+</div>
+<div class="dice" id="dice-7">
+    <object class="svg-object" type="image/svg+xml"></object>
+    <p class="number"></p>
+</div>
+</div>
+
+</div>
+
+<div id="credit">
+
+<p><br><br><br><br><br><br><br><hr></p>
+
+<p id="t1">富士中数学部</p><p id="t2">JAMAICA</p>
+
+<p id="credittext">Webページ制作・数学部部長Tanizawa.<br>企画・数学部<p>
+    
+<p><hr><br><br><br><br><br><br></p>
+
+</div>
+
+
+
+
+
+<script>
+    const svgContainers = [
+        document.getElementById('dice-1'),
+        document.getElementById('dice-2'),
+        document.getElementById('dice-3'),
+        document.getElementById('dice-4'),
+        document.getElementById('dice-5'),
+        document.getElementById('dice-6'),
+        document.getElementById('dice-7')
+    ];
+    const svgFiles = [
+        '1.svg',
+        '2.svg',
+        '3.svg',
+        '4.svg',
+        '5.svg',
+        '6.svg'
+    ];
+
+    function displayRandomSvg(container, index) {
+            const randomIndex = Math.floor(Math.random() * svgFiles.length);
+            const selectedSvg = svgFiles[randomIndex];
+            const fileNumber = selectedSvg.replace('image', '').replace('.svg', '');
+
+            const svgObject = container.querySelector('.svg-object');
+            const svgNumber = container.querySelector('.number');
+
+            svgObject.data = selectedSvg;
+            svgObject.style.transform = 'rotate(360deg)';
+
+            let delay = 0;
+            if (index === 5 || index === 6) { // 5つ目のコンテナの場合
+                delay = 1500; // 2秒遅延
+            }
+
+            setTimeout(() => {
+                svgNumber.textContent = fileNumber;
+            }, delay);
+        }
+
+        function changeSvgs() {
+            svgContainers.forEach(container => {
+                // 初期化と回転リセット
+                container.querySelector('.svg-object').data = '';
+                container.querySelector('.number').textContent = '';
+                container.querySelector('.svg-object').style.transform = 'rotate(0deg)';
+            });
+
+            let delay = 0;
+            svgContainers.forEach((container, index) => {
+                setTimeout(() => {
+                    displayRandomSvg(container, index); // index を渡す
+                }, delay);
+                delay += 100;
+            });
+        }
+
+        // 左シフトキーが押されたら changeSvgs 関数を実行
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                changeSvgs();
+            }
+        });
+
+
+    $(function() {
+    $('#canvas').outerHeight($(window).height());
+    });
+    $(window).on('resize',function(){
+    winH = $(window).height();
+    $('#canvas').outerHeight(winH);
+    });
+    </script>
+
+<style>
+.svg-object {
+    transition: transform 1s linear; /* 1秒かけて線形に回転 */
+}
+
+.materials .number {
+    position: absolute;
+    top: 160px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #e6b422;
+    font-size: 120px;
+}
+
+.theme .number {
+    position: absolute;
+    left: 50%;
+    color: #e6b422;
+    font-size: 360px;
+    margin-top: -360px;
+}
+
+#dice-6 .number {
+    position: absolute;
+    left: 50%;
+    transform: translateX(150px);
+    color: #e6b422;
+    font-size: 360px;
+}
+
+#dice-7 .number {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-435px);
+    color: #e6b422;
+    font-size: 360px;
+}
+
+.dice {
+    width: 240px;
+    height: 240px;
+    text-align: center;
+    display: inline-block;
+    position: relative;
+}
+
+.materials {
+    display: flex;
+    justify-content: space-around;
+}
+
+.theme {
+    display: flex;
+    justify-content: space-around;
+}
+
+body {
+    background-color: #2b2b2b;
+    font-family: "ruika", sans-serif;
+    font-weight: 100;
+    font-style: normal;
+}
+
+#credit {
+    background-color:#e6b422
+    position:fixed;
+}
+
+#credittext {
+    font-weight: 100;
+    font-size: 40px;
+    text-align: center;
+    color: #f2f2f3;
+    line-height: 60px;
+}
+
+#t1{
+    font-size: 80px;
+    text-align: center;
+    color: #f2f2f3;
+    line-height: 60px;
+}
+
+#t2{
+    font-size: 160px;
+    text-align: center;
+    color: #e6b422;
+    line-height: 60px;
+}
+</style>
+</body>
+</html>
