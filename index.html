@@ -18,126 +18,151 @@
 </head>
 <body>
 
-
-
 <div style="height:40px;"></div>
 
 <div id="canvas">
 
 <div class="materials">
 <div class="dice" id="dice-1">
-    <object class="svg-object" type="image/svg+xml"></object>
+    <object class="object" type="image/svg+xml" width="75%" height="75%"></object>
     <p class="number"></p>
 </div>
 <div class="dice" id="dice-2">
-    <object class="svg-object" type="image/svg+xml"></object>
+    <object class="object" type="image/svg+xml" width="75%" height="75%"></object>
     <p class="number"></p>
 </div>
 <div class="dice" id="dice-3">
-    <object class="svg-object" type="image/svg+xml"></object>
+    <object class="object" type="image/svg+xml" width="75%" height="75%"></object>
     <p class="number"></p>
 </div>
 <div class="dice" id="dice-4">
-    <object class="svg-object" type="image/svg+xml"></object>
+    <object class="object" type="image/svg+xml" width="75%" height="75%"></object>
     <p class="number"></p>
 </div>
 <div class="dice" id="dice-5">
-    <object class="svg-object" type="image/svg+xml"></object>
+    <object class="object" type="image/svg+xml" width="75%" height="75%"></object>
     <p class="number"></p>
 </div>
 </div>
+
 
 <div style="height:360px;"></div>
 
+
 <div class="theme">
 <div class="dice" id="dice-6">
-    <object class="svg-object" type="image/svg+xml"></object>
+    <object class="object" type="image/svg+xml" width="75%" height="75%"></object>
     <p class="number"></p>
 </div>
+
+<div id="themenumber"></div>
+
 <div class="dice" id="dice-7">
-    <object class="svg-object" type="image/svg+xml"></object>
+    <object class="object" type="image/svg+xml" width="75%" height="75%"></object>
     <p class="number"></p>
 </div>
+
 </div>
 
 </div>
 
 <div id="credit">
 
-<p><br><br><br><hr></p>
-
-<p id="t1">富士中数学部</p><p id="t2">JAMAICA</p>
-
-<p id="credittext">Webページ制作・数学部部長Tanizawa.<br>企画・数学部<br><br>このWebサイトは、iPad版Safari向けに作ったものです。<br>他の端末や機種では正しく表示されないことがあります。<br>サイトを75%縮小して見るのがおすすめです。<p>
+    <p><br><br><br><hr></p>
     
-<p><hr><br></p>
-
+    <p id="t1">富士中数学部</p><p id="t2">JAMAICA</p>
+    
+    <p id="credittext">Webページ制作・数学部部長Tanizawa.<br>企画・数学部<br><br>このWebサイトは、iPad版Safari向けに作ったものです。<br>他の端末や機種では正しく表示されないことがあります。<p>
+        
+    <p><hr><br></p>
+    
 </div>
 
+<p id="message">Press Enter to start JAMAICA...</p>
+
 <script>
-    const svgContainers = [
-        document.getElementById('dice-1'),
-        document.getElementById('dice-2'),
-        document.getElementById('dice-3'),
-        document.getElementById('dice-4'),
-        document.getElementById('dice-5'),
-        document.getElementById('dice-6'),
-        document.getElementById('dice-7')
-    ];
-    const svgFiles = [
-        '1.svg',
-        '2.svg',
-        '3.svg',
-        '4.svg',
-        '5.svg',
-        '6.svg'
-    ];
+const dices = [
+    document.getElementById('dice-1'),
+    document.getElementById('dice-2'),
+    document.getElementById('dice-3'),
+    document.getElementById('dice-4'),
+    document.getElementById('dice-5'),
+    document.getElementById('dice-6'),
+    document.getElementById('dice-7')
+];
+const svgFiles = [
+    '1.svg',
+    '2.svg',
+    '3.svg',
+    '4.svg',
+    '5.svg',
+    '6.svg'
+];
 
-    function displayRandomSvg(container, index) {
-            const randomIndex = Math.floor(Math.random() * svgFiles.length);
-            const selectedSvg = svgFiles[randomIndex];
-            const fileNumber = selectedSvg.replace('image', '').replace('.svg', '');
+const themenumber = document.getElementById('themenumber');
+const message = document.getElementById('message'); // メッセージ要素を取得
 
-            const svgObject = container.querySelector('.svg-object');
-            const svgNumber = container.querySelector('.number');
+function displayRandomSvg(dice, index) {
+    const randomIndex = Math.floor(Math.random() * svgFiles.length);
+    const selectedSvg = svgFiles[randomIndex];
+    const fileNumber = selectedSvg.replace('.svg', '');
 
-            svgObject.data = selectedSvg;
-            svgObject.style.transform = 'rotate(360deg)';
+    const object = dice.querySelector('.object');
+    const number = dice.querySelector('.number');
 
-            let delay = 0;
-            if (index === 5 || index === 6) { // 5つ目のコンテナの場合
-                delay = 1500; // 2秒遅延
+    object.data = selectedSvg;
+    object.style.transform = `rotate(360deg)`; // 回転角度を固定
+
+    let delay = 1000;
+    if (index === 5 || index === 6) {
+        delay = 1000;
+    }
+
+    setTimeout(() => {
+        if (number) {
+            number.textContent = fileNumber;
+            if (index === 6) {
+                const num6 = parseInt(dices[5].querySelector('.number').textContent);
+                const num7 = parseInt(dices[6].querySelector('.number').textContent);
+                if (!isNaN(num6) && !isNaN(num7)) {
+                    const twoDigitNumber = num6 * 10 + num7;
+                    themenumber.textContent = twoDigitNumber;
+                }
             }
-
-            setTimeout(() => {
-                svgNumber.textContent = fileNumber;
-            }, delay);
         }
+    }, delay);
+}
 
-        function changeSvgs() {
-            svgContainers.forEach(container => {
-                // 初期化と回転リセット
-                container.querySelector('.svg-object').data = '';
-                container.querySelector('.number').textContent = '';
-                container.querySelector('.svg-object').style.transform = 'rotate(0deg)';
-            });
+function changeSvgs() {
+    themenumber.textContent = ''; // 二桁の数字を消去
+    message.style.display = 'none'; // メッセージを非表示
 
-            let delay = 0;
-            svgContainers.forEach((container, index) => {
-                setTimeout(() => {
-                    displayRandomSvg(container, index); // index を渡す
-                }, delay);
-                delay += 100;
-            });
+    dices.forEach(dice => {
+        dice.querySelector('.object').data = '';
+        if (dice.querySelector('.number')) {
+            dice.querySelector('.number').textContent = '';
         }
+        dice.querySelector('.object').style.transform = 'rotate(0deg)';
+    });
 
-        // 左シフトキーが押されたら changeSvgs 関数を実行
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                changeSvgs();
-            }
-        });
+    let delay = 200;
+    dices.forEach((dice, index) => {
+        setTimeout(() => {
+            displayRandomSvg(dice, index);
+        }, delay);
+        delay += 150;
+    });
+}
 
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        changeSvgs();
+    }
+});
+
+dices.forEach((dice, index) => {
+    dice.style.transitionDelay = `${index * 0.1}s`;
+});
 
     $(function() {
     $('#canvas').outerHeight($(window).height());
@@ -146,11 +171,11 @@
     winH = $(window).height();
     $('#canvas').outerHeight(winH);
     });
-    </script>
+</script>
 
 <style>
-.svg-object {
-    transition: transform 1s linear; /* 1秒かけて線形に回転 */
+.object {
+    transition: transform 0.8s linear; /* 1秒かけて線形に回転 */
 }
 
 .materials .number {
@@ -163,27 +188,14 @@
 }
 
 .theme .number {
+    opacity: 0;
+}
+
+#themenumber {
+    margin-top: -200px; /* 位置調整 */
     position: absolute;
-    left: 50%;
     color: #e6b422;
     font-size: 360px;
-    margin-top: -360px;
-}
-
-#dice-6 .number {
-    position: absolute;
-    left: 50%;
-    transform: translateX(165px);
-    color: #e6b422;
-    font-size: 300px;
-}
-
-#dice-7 .number {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-385px);
-    color: #e6b422;
-    font-size: 300px;
 }
 
 .dice {
@@ -213,7 +225,7 @@ body {
 
 #credittext {
     font-weight: 100;
-    font-size: 40px;
+    font-size: 30px;
     text-align: center;
     color: #f2f2f3;
     line-height: 60px;
@@ -231,6 +243,15 @@ body {
     text-align: center;
     color: #e6b422;
     line-height: 60px;
+}
+
+#message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #f2f2f3;
+    font-size: 24px;
 }
 </style>
 </body>
