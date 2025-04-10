@@ -253,6 +253,7 @@ $(window).on('resize',function(){
 <style>
 .object {
     transition: transform 0.8s linear;
+    z-index: 1; /* サイコロの画像を数字よりも後ろに配置 */
 }
 .materials .number {
     position: absolute;
@@ -261,6 +262,7 @@ $(window).on('resize',function(){
     transform: translateX(-50%);
     color: #e6b422;
     font-size: 120px;
+    z-index: 2; /* 数字をサイコロの画像よりも前に配置 */
 }
 .theme .number {
     opacity: 0;
