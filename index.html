@@ -180,7 +180,7 @@ function calculate() {
 
 function displaySolutions(solutions) {
     let html = '<table>';
-    for (let i = 0; i < solutions.length; i += 4) { // 横に4つずつ表示
+    for (let i = 0; i < solutions.length; i += 4) {
         html += '<tr>';
         for (let j = i; j < i + 4 && j < solutions.length; j++) {
             html += '<td>' + solutions[j] + '</td>';
@@ -253,7 +253,6 @@ $(window).on('resize',function(){
 <style>
 .object {
     transition: transform 0.8s linear;
-    z-index: 1;
 }
 .materials .number {
     position: absolute;
@@ -262,7 +261,6 @@ $(window).on('resize',function(){
     transform: translateX(-50%);
     color: #e6b422;
     font-size: 120px;
-    z-index: 2;
 }
 .theme .number {
     opacity: 0;
@@ -279,7 +277,6 @@ $(window).on('resize',function(){
     text-align: center;
     display: inline-block;
     position: relative;
-    z-index: 1;
 }
 .materials {
     display: flex;
@@ -288,7 +285,6 @@ $(window).on('resize',function(){
 .theme {
     display: flex;
     justify-content: space-around;
-    z-index: 2;
 }
 body {
     background-color: #2b2b2b;
