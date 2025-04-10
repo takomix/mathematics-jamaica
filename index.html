@@ -7,14 +7,14 @@
 <link rel="icon" href="favicon.ico">
 <script>
     (function(d) {
-      var config = {
-        kitId: 'gyg4pun',
-        scriptTimeout: 3000,
-        async: true
-      },
-      h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+        var config = {
+            kitId: 'gyg4pun',
+            scriptTimeout: 3000,
+            async: true
+        },
+        h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
     })(document);
-  </script>
+</script>
 </head>
 <body>
 
@@ -45,9 +45,7 @@
 </div>
 </div>
 
-
 <div style="height:360px;"></div>
-
 
 <div class="theme">
 <div class="dice" id="dice-6">
@@ -61,24 +59,24 @@
     <object class="object" type="image/svg+xml" width="75%" height="75%"></object>
     <p class="number"></p>
 </div>
-
 </div>
 
 </div>
+
+<div style="text-align: center; margin-top: 20px;">
+    <button id="checkButton" style="display: none; padding: 20px 40px; font-size: 24px; background-color: #e6b422; color: #2b2b2b; border: none; border-radius: 8px; font-family: 'ruika', sans-serif; margin: 0 auto; display: block;">Check Answer...</button>
+</div>
+<p id="result"></p>
+<div id="solution"></div>
 
 <div id="credit">
-
     <p><br><br><br><hr></p>
-    
     <p id="t1">富士中数学部</p><p id="t2">JAMAICA</p>
-    
     <p id="credittext">Webページ制作・数学部部長Tanizawa.<br>企画・数学部<br><br>このWebサイトは、iPad版Safari向けに作ったものです。<br>他の端末や機種では正しく表示されないことがあります。<p>
-        
     <p><hr><br></p>
-    
 </div>
 
-<p id="message">Press Enter to start JAMAICA...</p>
+<p id="message">Tap or Click or Press Enter to Start JAMAICA...</p>
 
 <script>
 const dices = [
@@ -100,7 +98,11 @@ const svgFiles = [
 ];
 
 const themenumber = document.getElementById('themenumber');
-const message = document.getElementById('message'); // メッセージ要素を取得
+const message = document.getElementById('message');
+const checkButton = document.getElementById('checkButton');
+const resultElement = document.getElementById('result');
+const solutionElement = document.getElementById('solution');
+const canvas = document.getElementById('canvas');
 
 function displayRandomSvg(dice, index) {
     const randomIndex = Math.floor(Math.random() * svgFiles.length);
@@ -111,7 +113,7 @@ function displayRandomSvg(dice, index) {
     const number = dice.querySelector('.number');
 
     object.data = selectedSvg;
-    object.style.transform = `rotate(360deg)`; // 回転角度を固定
+    object.style.transform = `rotate(360deg)`;
 
     let delay = 1000;
     if (index === 5 || index === 6) {
@@ -134,8 +136,11 @@ function displayRandomSvg(dice, index) {
 }
 
 function changeSvgs() {
-    themenumber.textContent = ''; // 二桁の数字を消去
-    message.style.display = 'none'; // メッセージを非表示
+    themenumber.textContent = '';
+    message.style.display = 'none';
+    checkButton.style.display = 'block';
+    resultElement.textContent = '';
+    solutionElement.innerHTML = '';
 
     dices.forEach(dice => {
         dice.querySelector('.object').data = '';
@@ -154,30 +159,101 @@ function changeSvgs() {
     });
 }
 
-document.addEventListener('keydown', (event) => {
+function calculate() {
+    const blackSum = parseInt(themenumber.textContent);
+    const white = dices.slice(0, 5).map(dice => parseInt(dice.querySelector('.number').textContent));
+
+    if (isNaN(blackSum) || white.some(isNaN)) {
+        resultElement.textContent = 'サイコロの目を正しく読み取れませんでした。';
+        return;
+    }
+
+    const solutions = findSolutions(blackSum, white);
+
+    if (solutions.length > 0) {
+        resultElement.textContent = '計算結果は一致しました！';
+        displaySolutions(solutions);
+    } else {
+        resultElement.textContent = '計算結果は一致しません。';
+    }
+}
+
+function displaySolutions(solutions) {
+    let html = '<table>';
+    for (let i = 0; i < solutions.length; i += 8) {
+        html += '<tr>';
+        for (let j = i; j < i + 8 && j < solutions.length; j++) {
+            html += '<td>' + solutions[j] + '</td>';
+        }
+        html += '</tr>';
+    }
+    html += '</table>';
+    solutionElement.innerHTML = html;
+}
+
+function findSolutions(target, numbers) {
+    const solutions = [];
+    const operators = ['+', '-', '*', '/'];
+
+    function solve(current, remaining, expression) {
+        if (remaining.length === 0) {
+            if (Math.abs(current - target) < 1e-9) {
+                solutions.push(expression);
+            }
+            return;
+        }
+
+        for (let i = 0; i < remaining.length; i++) {
+            const next = remaining[i];
+            const rest = remaining.slice(0, i).concat(remaining.slice(i + 1));
+
+            if (expression === '') {
+                solve(next, rest, next.toString());
+            } else {
+                for (const op of operators) {
+                    if (op === '/' && next === 0) continue;
+                    let nextCurrent;
+                    if (op === '+') nextCurrent = current + next;
+                    if (op === '-') nextCurrent = current - next;
+                    if (op === '*') nextCurrent = current * next;
+                    if (op === '/') nextCurrent = current / next;
+
+                    solve(nextCurrent, rest, expression + ' ' + op + ' ' + next);
+                }
+            }
+        }
+    }
+
+    solve(0, numbers, '');
+    return solutions;
+}
+
+canvas.addEventListener('click', changeSvgs);
+document.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
         changeSvgs();
     }
 });
 
+checkButton.addEventListener('click', calculate);
+
 dices.forEach((dice, index) => {
     dice.style.transitionDelay = `${index * 0.1}s`;
 });
 
-    $(function() {
+$(function() {
     $('#canvas').outerHeight($(window).height());
-    });
-    $(window).on('resize',function(){
+});
+$(window).on('resize',function(){
     winH = $(window).height();
     $('#canvas').outerHeight(winH);
-    });
+});
 </script>
 
 <style>
 .object {
-    transition: transform 0.8s linear; /* 1秒かけて線形に回転 */
+    transition: transform 0.8s linear;
 }
-
 .materials .number {
     position: absolute;
     top: 160px;
@@ -186,45 +262,36 @@ dices.forEach((dice, index) => {
     color: #e6b422;
     font-size: 120px;
 }
-
 .theme .number {
     opacity: 0;
 }
-
 #themenumber {
-    margin-top: -200px; /* 位置調整 */
+    margin-top: -200px;
     position: absolute;
     color: #e6b422;
     font-size: 360px;
-    z-index: 100;
 }
-
 .dice {
     width: 240px;
     height: 240px;
     text-align: center;
     display: inline-block;
     position: relative;
-    z-index: 1;
 }
-
 .materials {
     display: flex;
     justify-content: space-around;
 }
-
 .theme {
     display: flex;
     justify-content: space-around;
 }
-
 body {
     background-color: #2b2b2b;
     font-family: "ruika", sans-serif;
     font-weight: 100;
     font-style: normal;
 }
-
 #credittext {
     font-weight: 100;
     font-size: 30px;
@@ -232,21 +299,18 @@ body {
     color: #f2f2f3;
     line-height: 60px;
 }
-
 #t1{
     font-size: 80px;
     text-align: center;
     color: #f2f2f3;
     line-height: 60px;
 }
-
 #t2{
     font-size: 160px;
     text-align: center;
     color: #e6b422;
     line-height: 60px;
 }
-
 #message {
     position: absolute;
     top: 50%;
@@ -254,6 +318,20 @@ body {
     transform: translate(-50%, -50%);
     color: #f2f2f3;
     font-size: 24px;
+}
+#result, #solution {
+    text-align: center;
+    color: #f2f2f3;
+    font-size: 20px;
+    margin-top: 20px;
+}
+#solution table {
+    margin: 20px auto;
+    border-collapse: collapse;
+}
+#solution td {
+    padding: 5px 10px;
+    border: 1px solid #f2f2f3;
 }
 </style>
 </body>
